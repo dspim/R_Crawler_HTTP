@@ -31,9 +31,13 @@ res = httr::GET("http://api.ser.ideas.iii.org.tw:80/api/lbs_restaurant/restauran
 res %>% content()
 ```
 
+深入了解HTTP協定URLs、Verbs、Status Codes、Request and Response Message Formats
 
 # Session / cookies
 
 - rvest::html_session
 
 
+# References
+
+- [httr quickstart guide](https://cran.r-project.org/web/packages/httr/vignettes/quickstart.html)
