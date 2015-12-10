@@ -3,3 +3,4 @@
 .RData
 *.html
 http_request_files
+*.pdf
