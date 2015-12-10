@@ -3,17 +3,20 @@ title: "HTTP request"
 author: "chihchengliang"
 date: "2015年12月06日"
 output:
-  #ioslides_presentation:
+  ioslides_presentation:
+    css: css/dsp.css
+    self_contained: no
+    widescreen: yes
   html_document:
     theme: readable
 ---
 
-# Agenda
+## Agenda
 
 - HTTP request
 
 
-# HTTP request
+## HTTP request
 
 - rvest 讓我們模仿使用瀏覽器的方式造訪網站，取得表格與表單
 - 仍然有使用場景，我們必須親自發出HTTP請求
@@ -28,16 +31,16 @@ output:
 library(httr)
 library(magrittr)
 res = httr::GET("http://api.ser.ideas.iii.org.tw:80/api/lbs_restaurant/restaurant_city_search?city=%E5%8F%B0%E5%8C%97%E5%B8%82&type=%E7%95%B0%E5%9C%8B%E6%96%99%E7%90%86&sort=score&token=api_doc_token")
-res %>% content()
+res %>% content() %>% str()
 ```
 
 深入了解HTTP協定URLs、Verbs、Status Codes、Request and Response Message Formats
 
-# Session / cookies
+## Session / cookies
 
 - rvest::html_session
 
 
-# References
+## References
 
 - [httr quickstart guide](https://cran.r-project.org/web/packages/httr/vignettes/quickstart.html)
