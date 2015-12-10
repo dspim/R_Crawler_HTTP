@@ -82,9 +82,50 @@ res %>% content %>% str
 
 深入了解HTTP協定URLs、Verbs、Status Codes、Request and Response Message Formats
 
-## Session / cookies
+# Session / cookies
+
+## 為什麼要知道 cookies
+
+- Cookies：瀏覽器的變數，用來簡單記錄使用者的狀態
+- Session：
 
 - rvest::html_session
+
+## 如何繞過 Ptt 八卦版18禁詢問頁面
+
+```{r message=FALSE}
+library(rvest)
+read_html("https://www.ptt.cc/bbs/Gossiping/index.html") %>% html_text(trim = T)
+```
+
+## 使用rvest的session物件記錄cookie
+
+```{r}
+session = rvest::html_session(url = "https://www.ptt.cc/bbs/Gossiping/index.html")
+
+form = session %>%
+  html_node("form") %>%
+  html_form()
+
+session_redirected = rvest::submit_form(session = session, form = form )
+```
+
+## 在重導向的Session物件中取得資料
+
+```{r}
+session_redirected %>%
+  html_node("body") %>%
+  html_nodes(".title") %>%
+  html_text(trim=T)
+
+```
+
+## Session幫我們保留了Cookie
+
+```{r}
+library(knitr)
+session_redirected %>% cookies %>% kable
+```
 
 
 ## References
