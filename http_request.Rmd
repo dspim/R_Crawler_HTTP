@@ -19,8 +19,9 @@ output:
 
 # HTTP request
 
+<img src="img/404.jpg" style="float:right">
 
-## 了解 HTTP 請求 能讓開發者處理更多爬蟲使用情境
+## 開發者了解 HTTP 請求 能處理更多爬蟲情境
 
 - rvest 讓我們模仿使用瀏覽器的方式造訪網站，取得表格與表單
 - 親自發出HTTP請求的使用情境仍然很多
@@ -43,9 +44,11 @@ output:
 
 </div>
 
-## 用 HTTP 請求取得資策會 SER API 資料
+## API 文件註明「動詞」與「 URI 」
 
-- Demo site: [SER API](http://api.ser.ideas.iii.org.tw/docs/#!/fb_fanpage_search)
+...還有其他需要填寫的參數
+
+接下來會用資策會 [SER API](http://api.ser.ideas.iii.org.tw/docs/#!/fb_fanpage_search) 示範如何依照文件指示取得資料
 
 <img src="img/API_doc.png" style="height:300px">
 
@@ -60,8 +63,8 @@ library(httr)
 
 ## GET把所有請求參數放在URL裡
 
+尋找餐廳資訊
 ```{r}
-
 res = httr::GET("http://api.ser.ideas.iii.org.tw:80/api/lbs_restaurant/restaurant_city_search?sort=score&token=api_doc_token&limit=5")
 
 # 用content取出回傳的內容
@@ -95,12 +98,33 @@ res %>% content %>% str
 
 # Session / cookies
 
-## 為什麼要知道 cookies
+<img src="img/cookies.jpg" style="float:right;height:300px">
 
-- Cookies：瀏覽器的變數，用來簡單記錄使用者的狀態
-- Session：
+## 爬蟲送出對的動詞與 URI 不一定拿得到想要的資源
+
+- HTTP 請求的細節會影響伺服器是否想給你資料
+- 伺服器的程式可能根據請求細節下判斷，是否回傳資料
+- 例如：Cookie是否狀態正確？
+
+<div class="notes">
+- 還有那些沒 cover 到的：User-agent。
+</div>
+
+## Cookies 記錄客戶端狀態 </br> Session 是使用者與網站互動歷程
+
+- Cookies：瀏覽器的變數，用來簡單記錄使用者的狀態。
+- Session：原意是指使用者進入網站到離開網站的這段互動的時間。一般來說客戶端或伺服端一方要記錄互動的狀態。Cookie是常見客戶端用來記錄使用者互動的方式。
 
 - rvest::html_session
+
+<div class="notes">
+
+- HTTP無狀態，影響互動實作
+- 購物頁面範例：結帳時怎麼知道買了什麼東西？ 那用GET參數記錄狀態？
+- 下次自動登入
+- Cookie會過期
+
+</div>
 
 ## Ptt 八卦版18禁詢問頁面 讓爬蟲程式無法進到文章列表
 
@@ -159,4 +183,7 @@ session_redirected %>% cookies %>% kable
 
 ### 延伸閱讀
 - [HTTP: The Protocol Every Web Developer Must Know - Part 1](http://code.tutsplus.com/tutorials/http-the-protocol-every-web-developer-must-know-part-1--net-31177) 淺白的 HTTP 協定介紹文章
+
+![](img/url-structure.png)
+
 - [What are sessions? How do they work?](http://stackoverflow.com/questions/3804209/what-are-sessions-how-do-they-work) 對Session有淺白的介紹
