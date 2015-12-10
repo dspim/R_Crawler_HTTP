@@ -20,7 +20,7 @@ output:
 # HTTP request
 
 
-## 了解 HTTP 請求很重要
+## 了解 HTTP 請求 能讓開發者處理更多爬蟲使用情境
 
 - rvest 讓我們模仿使用瀏覽器的方式造訪網站，取得表格與表單
 - 親自發出HTTP請求的使用情境仍然很多
@@ -62,10 +62,10 @@ library(httr)
 
 ```{r}
 
-res = httr::GET("http://api.ser.ideas.iii.org.tw:80/api/lbs_restaurant/restaurant_city_search?city=%E5%8F%B0%E5%8C%97%E5%B8%82&type=%E7%95%B0%E5%9C%8B%E6%96%99%E7%90%86&sort=score&token=api_doc_token&limit=5")
+res = httr::GET("http://api.ser.ideas.iii.org.tw:80/api/lbs_restaurant/restaurant_city_search?sort=score&token=api_doc_token&limit=5")
 
 # 用content取出回傳的內容
-content(res)
+str(content(res))
 ```
 
 ## 用神奇的magrittr語法讓程式變漂亮吧
@@ -78,8 +78,9 @@ res %>% content %>% str
 
 ## POST 的請求參數以 list 放在 body 中
 
-```{r}
+透過經緯度座標、半徑搜尋一週內Facebook上的熱門打卡點
 
+```{r}
 res = httr::POST(
   url = "http://api.ser.ideas.iii.org.tw:80/api/fb_checkin_search",
   body = list(
@@ -92,11 +93,6 @@ res %>% content %>% str
 
 ```
 
-
-## 背景知識
-
-深入了解HTTP協定URLs、Verbs、Status Codes、Request and Response Message Formats
-
 # Session / cookies
 
 ## 為什麼要知道 cookies
@@ -106,12 +102,21 @@ res %>% content %>% str
 
 - rvest::html_session
 
-## 如何繞過 Ptt 八卦版18禁詢問頁面
+## Ptt 八卦版18禁詢問頁面 讓爬蟲程式無法進到文章列表
 
 ```{r message=FALSE}
 library(rvest)
 read_html("https://www.ptt.cc/bbs/Gossiping/index.html") %>% html_text(trim = T)
 ```
+
+## 必須持有over18的cookie 伺服器才不會重導向
+
+<img src="img/before_over18.png" style="width:100%">
+
+## 必須持有over18的cookie 伺服器才不會重導向
+
+<img src="img/after_over18.png" style="width:100%">
+
 
 ## 使用rvest的session物件記錄cookie
 
@@ -135,9 +140,14 @@ session_redirected %>%
 
 ```
 
-## Session幫我們保留了Cookie
+## Session物件幫我們保留了Cookie
 
-```{r}
+```{r eval=FALSE}
+session_redirected %>% cookies
+```
+
+
+```{r echo=FALSE}
 library(knitr)
 session_redirected %>% cookies %>% kable
 ```
@@ -146,3 +156,7 @@ session_redirected %>% cookies %>% kable
 ## References
 
 - [httr quickstart guide](https://cran.r-project.org/web/packages/httr/vignettes/quickstart.html)
+
+### 延伸閱讀
+- [HTTP: The Protocol Every Web Developer Must Know - Part 1](http://code.tutsplus.com/tutorials/http-the-protocol-every-web-developer-must-know-part-1--net-31177) 淺白的 HTTP 協定介紹文章
+- [What are sessions? How do they work?](http://stackoverflow.com/questions/3804209/what-are-sessions-how-do-they-work) 對Session有淺白的介紹
