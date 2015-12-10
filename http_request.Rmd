@@ -13,26 +13,41 @@ output:
 
 ## Agenda
 
-- HTTP request
-- Session / cookies
+### HTTP request
+### Session / cookies
 
 
 # HTTP request
 
 
-## 為什麼要知道 HTTP request
+## 了解 HTTP 請求很重要
 
 - rvest 讓我們模仿使用瀏覽器的方式造訪網站，取得表格與表單
-- 仍然有使用場景，我們必須親自發出HTTP請求
-- 例如API
+- 親自發出HTTP請求的使用情境仍然很多
+- 例如：API的文件會註明使用何種 HTTP 請求方式取得資料
 
----
+## 客戶端透過「動詞」與「URI」和伺服器請求服務
 
-### API範例
+<img src="img/request_response.png" style="width:80%">
+
+
+<div class="notes">
+
+- HTTP 是機器在網路上溝通的方式
+- 伺服器提供服務。例如：Google機房的伺服器提供搜尋服務。
+- 客戶端請求服務。例如：你的電腦（客戶端）透過瀏覽器或R程式向Google伺服器請求搜尋服務。
+- 常用的動詞`GET`(90%)、`POST`(9%) （其他你幾乎看不到了）
+- URI代表資源位置。
+
+> 瀏覽器使用動詞 `GET`對伺服器請求 URI `/`。伺服器回應200，並傳回html文件。
+
+</div>
+
+## 用 HTTP 請求取得資策會 SER API 資料
 
 - Demo site: [SER API](http://api.ser.ideas.iii.org.tw/docs/#!/fb_fanpage_search)
 
-![](img/API_doc.png)
+<img src="img/API_doc.png" style="height:300px">
 
 ## 使用 httr套件
 
@@ -43,7 +58,7 @@ library(httr)
 - httr::POST
 - httr::GET
 
-## 練習 GET
+## GET把所有請求參數放在URL裡
 
 ```{r}
 
@@ -61,7 +76,7 @@ res %>% content %>% str
 ```
 
 
-## 練習 POST
+## POST 的請求參數以 list 放在 body 中
 
 ```{r}
 
