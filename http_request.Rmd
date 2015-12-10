@@ -14,25 +14,71 @@ output:
 ## Agenda
 
 - HTTP request
+- Session / cookies
 
 
-## HTTP request
+# HTTP request
+
+
+## 為什麼要知道 HTTP request
 
 - rvest 讓我們模仿使用瀏覽器的方式造訪網站，取得表格與表單
 - 仍然有使用場景，我們必須親自發出HTTP請求
 - 例如API
 
+---
+
+### API範例
+
 - Demo site: [SER API](http://api.ser.ideas.iii.org.tw/docs/#!/fb_fanpage_search)
+
+![](img/API_doc.png)
+
+## 使用 httr套件
+
+```{r}
+library(httr)
+```
 
 - httr::POST
 - httr::GET
 
+## 練習 GET
+
 ```{r}
-library(httr)
-library(magrittr)
-res = httr::GET("http://api.ser.ideas.iii.org.tw:80/api/lbs_restaurant/restaurant_city_search?city=%E5%8F%B0%E5%8C%97%E5%B8%82&type=%E7%95%B0%E5%9C%8B%E6%96%99%E7%90%86&sort=score&token=api_doc_token")
-res %>% content() %>% str()
+
+res = httr::GET("http://api.ser.ideas.iii.org.tw:80/api/lbs_restaurant/restaurant_city_search?city=%E5%8F%B0%E5%8C%97%E5%B8%82&type=%E7%95%B0%E5%9C%8B%E6%96%99%E7%90%86&sort=score&token=api_doc_token&limit=5")
+
+# 用content取出回傳的內容
+content(res)
 ```
+
+## 用神奇的magrittr語法讓程式變漂亮吧
+
+```{r}
+library(magrittr)
+res %>% content %>% str
+```
+
+
+## 練習 POST
+
+```{r}
+
+res = httr::POST(
+  url = "http://api.ser.ideas.iii.org.tw:80/api/fb_checkin_search",
+  body = list(
+    coordinates="25.041399,121.554233",
+    radius="0.1",
+    token = "api_doc_token"), 
+  encode = "form")
+
+res %>% content %>% str
+
+```
+
+
+## 背景知識
 
 深入了解HTTP協定URLs、Verbs、Status Codes、Request and Response Message Formats
 
