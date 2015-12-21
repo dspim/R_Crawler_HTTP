@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>HTTP request</title>
+
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="generator" content="pandoc" />
+
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+
+  <link rel="stylesheet" media="all" href="http_request_files/ioslides-13.5.1/fonts/fonts.css">
+
+  <link rel="stylesheet" media="all" href="http_request_files/ioslides-13.5.1/theme/css/default.css">
+  <link rel="stylesheet" media="only screen and (max-device-width: 480px)" href="http_request_files/ioslides-13.5.1/theme/css/phone.css">
+
+  <base target="_blank">
+
+  <script type="text/javascript">
+    var SLIDE_CONFIG = {
+      // Slide settings
+      settings: {
+                title: 'HTTP request',
+                        useBuilds: true,
+        usePrettify: true,
+        enableSlideAreas: true,
+        enableTouch: true,
+              },
+
+      // Author information
+      presenters: [
+            {
+        name:  'chihchengliang' ,
+        company: '',
+        gplus: '',
+        twitter: '',
+        www: '',
+        github: ''
+      },
+            ]
+    };
+  </script>
+
+  <style type="text/css">
+
+    b, strong {
+      font-weight: bold;
+    }
+
+    em {
+      font-style: italic;
+    }
+
+    slides > slide {
+      -webkit-transition: all 0.4s ease-in-out;
+      -moz-transition: all 0.4s ease-in-out;
+      -o-transition: all 0.4s ease-in-out;
+      transition: all 0.4s ease-in-out;
+    }
+
+    .auto-fadein {
+      -webkit-transition: opacity 0.6s ease-in;
+      -webkit-transition-delay: 0.4s;
+      -moz-transition: opacity 0.6s ease-in 0.4s;
+      -o-transition: opacity 0.6s ease-in 0.4s;
+      transition: opacity 0.6s ease-in 0.4s;
+      opacity: 0;
+    }
+
+  </style>
+
+  <link rel="stylesheet" href="css/dsp.css" type="text/css" />
+
+
+</head>
+
+<body style="opacity: 0">
+
+<slides class="layout-widescreen">
+
+  <slide class="title-slide segue nobackground">
+        <!-- The content of this hgroup is replaced programmatically through the slide_config.json. -->
+    <hgroup class="auto-fadein">
+      <h1 data-config-title><!-- populated from slide_config.json --></h1>
+      <h2 data-config-subtitle><!-- populated from slide_config.json --></h2>
+      <p data-config-presenter><!-- populated from slide_config.json --></p>
+            <p style="margin-top: 6px; margin-left: -2px;">2015年12月06日</p>
+          </hgroup>
+  </slide>
+
+<slide class=''><hgroup><h2>Agenda</h2></hgroup><article  id="agenda">
+
+<h3>HTTP request</h3>
+
+<h3>Session / cookies</h3>
+
+</article></slide><slide class='segue dark nobackground'><hgroup class = 'auto-fadein'><h2>HTTP request</h2></hgroup><article  id="http-request-1">
+
+<p><img src="img/404.jpg" style="float:right"></p>
+
+</article></slide><slide class=''><hgroup><h2>開發者了解 HTTP 請求 能處理更多爬蟲情境</h2></hgroup><article  id="-http--">
+
+<ul>
+<li>rvest 讓我們模仿使用瀏覽器的方式造訪網站，取得表格與表單</li>
+<li>親自發出HTTP請求的使用情境仍然很多</li>
+<li>例如：API的文件會註明使用何種 HTTP 請求方式取得資料</li>
+</ul>
+
+</article></slide><slide class=''><hgroup><h2>客戶端透過「動詞」與「URI」和伺服器請求服務</h2></hgroup><article  id="uri">
+
+<p><img src="img/request_response.png" style="width:80%"></p>
+
+<aside class='note'><section><p><img src="img/order.jpg" style="width:100%"></p></section></aside>
+
+</article></slide><slide class=''><hgroup><h2>headers: 客戶端和伺服器的對話有更多細節</h2></hgroup><article  id="headers-">
+
+<p><img src="img/request_headers.png" style="width:40%;display:inline;"> <img src="img/response_headers.png" style="width:40%;display:inline;"></p>
+
+</article></slide><slide class=''><hgroup><h2>API 文件註明「動詞」與「 URI 」</h2></hgroup><article  id="api--uri">
+
+<p>&#8230;還有其他需要填寫的參數</p>
+
+<p>接下來會用資策會 <a href='http://api.ser.ideas.iii.org.tw/docs/#!/fb_fanpage_search' title=''>SER API</a> 示範如何依照文件指示取得資料</p>
+
+<p><img src="img/API_doc.png" style="height:300px"></p>
+
+</article></slide><slide class=''><hgroup><h2>使用 httr套件</h2></hgroup><article  id="-httr">
+
+<pre class = 'prettyprint lang-r'>library(httr)</pre>
+
+<ul>
+<li>httr::POST</li>
+<li>httr::GET</li>
+</ul>
+
+</article></slide><slide class=''><hgroup><h2>GET把所有請求參數放在URL裡</h2></hgroup><article  id="geturl">
+
+<p>尋找餐廳資訊</p>
+
+<pre class = 'prettyprint lang-r'>res = httr::GET(&quot;http://api.ser.ideas.iii.org.tw:80/api/lbs_restaurant/restaurant_city_search?sort=score&amp;token=api_doc_token&amp;limit=5&quot;)
+
+# 用content取出回傳的內容
+str(content(res))</pre>
+
+<pre >## List of 3
+##  $ message: chr &quot;success&quot;
+##  $ total  : int 6343
+##  $ result :List of 1
+##   ..$ restaurant:List of 5
+##   .. ..$ :List of 16
+##   .. .. ..$ id           : chr &quot;2051&quot;
+##   .. .. ..$ focus_url    : chr &quot;http://www.ipeen.com.tw/focus/327&quot;
+##   .. .. ..$ url          : chr &quot;http://www.ipeen.com.tw/shop/84365&quot;
+##   .. .. ..$ shopname     : chr &quot;芒果恰恰冰館(台北光復總店)&quot;
+##   .. .. ..$ address      : chr &quot;台北市大安區光復南路562號&quot;
+##   .. .. ..$ avg_cost     : chr &quot;139&quot;
+##   .. .. ..$ tel          : chr &quot;02-2702-9506&quot;
+##   .. .. ..$ image        : chr &quot;http://iphoto.ipeen.com.tw/photo/ipeen/200x200/vip/5/6/3/store_84365/sp84365_20130528122523263.jpg&quot;
+##   .. .. ..$ score        : chr &quot;5&quot;
+##   .. .. ..$ views        : chr &quot;4034197&quot;
+##   .. .. ..$ collection   : chr &quot;1362&quot;
+##   .. .. ..$ business_hour: chr &quot;週一\t11:00~23:00\t\r\n週二\t11:00~23:00\t\r\n週三\t11:00~23:00\t\r\n週四\t11:00~23:00\t\r\n週五\t11:00~23:00\t\r\n週六\t11:00~&quot;| __truncated__
+##   .. .. ..$ review       : chr &quot;170&quot;
+##   .. .. ..$ city         : chr &quot;台北市&quot;
+##   .. .. ..$ type         : chr &quot;冰品、飲料、甜湯&quot;
+##   .. .. ..$ crawltime    : chr &quot;2015-07-20 13:09:07&quot;
+##   .. ..$ :List of 16
+##   .. .. ..$ id           : chr &quot;1509&quot;
+##   .. .. ..$ focus_url    : chr &quot;http://www.ipeen.com.tw/focus/158&quot;
+##   .. .. ..$ url          : chr &quot;http://www.ipeen.com.tw/shop/35880&quot;
+##   .. .. ..$ shopname     : chr &quot;亞尼克菓子工房(內湖店)&quot;
+##   .. .. ..$ address      : chr &quot;台北市內湖區瑞湖街178巷15號&quot;
+##   .. .. ..$ avg_cost     : chr &quot;242&quot;
+##   .. .. ..$ tel          : chr &quot;02-2657-4837&quot;
+##   .. .. ..$ image        : chr &quot;http://iphoto.ipeen.com.tw/photo/ipeen/200x200/vip/0/8/8/store_35880/sp35880_20130111105353495.jpg&quot;
+##   .. .. ..$ score        : chr &quot;5&quot;
+##   .. .. ..$ views        : chr &quot;6559216&quot;
+##   .. .. ..$ collection   : chr &quot;691&quot;
+##   .. .. ..$ business_hour: chr &quot;週一\t10:00~22:00\t\r\n週二\t10:00~22:00\t\r\n週三\t10:00~22:00\t\r\n週四\t10:00~22:00\t\r\n週五\t10:00~22:00\t\r\n週六\t10:00~&quot;| __truncated__
+##   .. .. ..$ review       : chr &quot;163&quot;
+##   .. .. ..$ city         : chr &quot;台北市&quot;
+##   .. .. ..$ type         : chr &quot;烘焙、甜點、零食&quot;
+##   .. .. ..$ crawltime    : chr &quot;2015-07-20 13:41:47&quot;
+##   .. ..$ :List of 16
+##   .. .. ..$ id           : chr &quot;327&quot;
+##   .. .. ..$ focus_url    : chr &quot;http://www.ipeen.com.tw/focus/1164&quot;
+##   .. .. ..$ url          : chr &quot;http://www.ipeen.com.tw/shop/617022&quot;
+##   .. .. ..$ shopname     : chr &quot;阿聰師的糕餅主意(台中秋紅谷館)&quot;
+##   .. .. ..$ address      : chr &quot;台中市西屯區臺灣大道三段630號&quot;
+##   .. .. ..$ avg_cost     : chr &quot;214&quot;
+##   .. .. ..$ tel          : chr &quot;04-2451-0199&quot;
+##   .. .. ..$ image        : chr &quot;http://iphoto.ipeen.com.tw/photo/ipeen/200x200/vip/2/2/0/store_617022/sp617022_20141024100139472.jpg&quot;
+##   .. .. ..$ score        : chr &quot;5&quot;
+##   .. .. ..$ views        : chr &quot;19387607&quot;
+##   .. .. ..$ collection   : chr &quot;183&quot;
+##   .. .. ..$ business_hour: chr &quot;週一\t09:00~22:00\t\r\n週二\t09:00~22:00\t\r\n週三\t09:00~22:00\t\r\n週四\t09:00~22:00\t\r\n週五\t09:00~22:00\t\r\n週六\t09:00~&quot;| __truncated__
+##   .. .. ..$ review       : chr &quot;145&quot;
+##   .. .. ..$ city         : chr &quot;台中市&quot;
+##   .. .. ..$ type         : chr &quot;烘焙、甜點、零食&quot;
+##   .. .. ..$ crawltime    : chr &quot;2015-07-20 11:47:04&quot;
+##   .. ..$ :List of 16
+##   .. .. ..$ id           : chr &quot;3147&quot;
+##   .. .. ..$ focus_url    : chr &quot;http://www.ipeen.com.tw/focus/832&quot;
+##   .. .. ..$ url          : chr &quot;http://www.ipeen.com.tw/shop/37453&quot;
+##   .. .. ..$ shopname     : chr &quot;先麥芋頭酥(台中中港店)&quot;
+##   .. .. ..$ address      : chr &quot;台中市西屯區臺灣大道三段570號&quot;
+##   .. .. ..$ avg_cost     : chr &quot;224&quot;
+##   .. .. ..$ tel          : chr &quot;04-2708-2268&quot;
+##   .. .. ..$ image        : chr &quot;http://iphoto.ipeen.com.tw/photo/ipeen/200x200/vip/3/5/4/store_37453/sp37453_20120204133855607.jpg&quot;
+##   .. .. ..$ score        : chr &quot;5&quot;
+##   .. .. ..$ views        : chr &quot;5168402&quot;
+##   .. .. ..$ collection   : chr &quot;157&quot;
+##   .. .. ..$ business_hour: chr &quot;週一\t08:30~22:00\t\r\n週二\t08:30~22:00\t\r\n週三\t08:30~22:00\t\r\n週四\t08:30~22:00\t\r\n週五\t08:30~22:00\t\r\n週六\t08:30~&quot;| __truncated__
+##   .. .. ..$ review       : chr &quot;137&quot;
+##   .. .. ..$ city         : chr &quot;台中市&quot;
+##   .. .. ..$ type         : chr &quot;烘焙、甜點、零食&quot;
+##   .. .. ..$ crawltime    : chr &quot;2015-07-20 12:18:30&quot;
+##   .. ..$ :List of 16
+##   .. .. ..$ id           : chr &quot;1594&quot;
+##   .. .. ..$ focus_url    : chr &quot;http://www.ipeen.com.tw/focus/1028&quot;
+##   .. .. ..$ url          : chr &quot;http://www.ipeen.com.tw/shop/57122&quot;
+##   .. .. ..$ shopname     : chr &quot;羅東林業文化園區&quot;
+##   .. .. ..$ address      : chr &quot;宜蘭縣羅東鎮中正北路118號&quot;
+##   .. .. ..$ avg_cost     : chr &quot;0&quot;
+##   .. .. ..$ tel          : chr &quot;03-954-5114&quot;
+##   .. .. ..$ image        : chr &quot;http://iphoto.ipeen.com.tw/photo/ipeen/200x200/def/0/4/5/787540/787540_20150103234752_1527.jpg&quot;
+##   .. .. ..$ score        : chr &quot;5&quot;
+##   .. .. ..$ views        : chr &quot;229825&quot;
+##   .. .. ..$ collection   : chr &quot;306&quot;
+##   .. .. ..$ business_hour: chr &quot;&quot;
+##   .. .. ..$ review       : chr &quot;131&quot;
+##   .. .. ..$ city         : chr &quot;宜蘭縣&quot;
+##   .. .. ..$ type         : chr &quot;休閒/遊憩景點&quot;
+##   .. .. ..$ crawltime    : chr &quot;2015-07-20 12:04:00&quot;</pre>
+
+</article></slide><slide class=''><hgroup><h2>用神奇的magrittr語法讓程式變漂亮吧</h2></hgroup><article  id="magrittr">
+
+<pre class = 'prettyprint lang-r'>library(magrittr)
+res %&gt;% content %&gt;% str</pre>
+
+<pre >## List of 3
+##  $ message: chr &quot;success&quot;
+##  $ total  : int 6343
+##  $ result :List of 1
+##   ..$ restaurant:List of 5
+##   .. ..$ :List of 16
+##   .. .. ..$ id           : chr &quot;2051&quot;
+##   .. .. ..$ focus_url    : chr &quot;http://www.ipeen.com.tw/focus/327&quot;
+##   .. .. ..$ url          : chr &quot;http://www.ipeen.com.tw/shop/84365&quot;
+##   .. .. ..$ shopname     : chr &quot;芒果恰恰冰館(台北光復總店)&quot;
+##   .. .. ..$ address      : chr &quot;台北市大安區光復南路562號&quot;
+##   .. .. ..$ avg_cost     : chr &quot;139&quot;
+##   .. .. ..$ tel          : chr &quot;02-2702-9506&quot;
+##   .. .. ..$ image        : chr &quot;http://iphoto.ipeen.com.tw/photo/ipeen/200x200/vip/5/6/3/store_84365/sp84365_20130528122523263.jpg&quot;
+##   .. .. ..$ score        : chr &quot;5&quot;
+##   .. .. ..$ views        : chr &quot;4034197&quot;
+##   .. .. ..$ collection   : chr &quot;1362&quot;
+##   .. .. ..$ business_hour: chr &quot;週一\t11:00~23:00\t\r\n週二\t11:00~23:00\t\r\n週三\t11:00~23:00\t\r\n週四\t11:00~23:00\t\r\n週五\t11:00~23:00\t\r\n週六\t11:00~&quot;| __truncated__
+##   .. .. ..$ review       : chr &quot;170&quot;
+##   .. .. ..$ city         : chr &quot;台北市&quot;
+##   .. .. ..$ type         : chr &quot;冰品、飲料、甜湯&quot;
+##   .. .. ..$ crawltime    : chr &quot;2015-07-20 13:09:07&quot;
+##   .. ..$ :List of 16
+##   .. .. ..$ id           : chr &quot;1509&quot;
+##   .. .. ..$ focus_url    : chr &quot;http://www.ipeen.com.tw/focus/158&quot;
+##   .. .. ..$ url          : chr &quot;http://www.ipeen.com.tw/shop/35880&quot;
+##   .. .. ..$ shopname     : chr &quot;亞尼克菓子工房(內湖店)&quot;
+##   .. .. ..$ address      : chr &quot;台北市內湖區瑞湖街178巷15號&quot;
+##   .. .. ..$ avg_cost     : chr &quot;242&quot;
+##   .. .. ..$ tel          : chr &quot;02-2657-4837&quot;
+##   .. .. ..$ image        : chr &quot;http://iphoto.ipeen.com.tw/photo/ipeen/200x200/vip/0/8/8/store_35880/sp35880_20130111105353495.jpg&quot;
+##   .. .. ..$ score        : chr &quot;5&quot;
+##   .. .. ..$ views        : chr &quot;6559216&quot;
+##   .. .. ..$ collection   : chr &quot;691&quot;
+##   .. .. ..$ business_hour: chr &quot;週一\t10:00~22:00\t\r\n週二\t10:00~22:00\t\r\n週三\t10:00~22:00\t\r\n週四\t10:00~22:00\t\r\n週五\t10:00~22:00\t\r\n週六\t10:00~&quot;| __truncated__
+##   .. .. ..$ review       : chr &quot;163&quot;
+##   .. .. ..$ city         : chr &quot;台北市&quot;
+##   .. .. ..$ type         : chr &quot;烘焙、甜點、零食&quot;
+##   .. .. ..$ crawltime    : chr &quot;2015-07-20 13:41:47&quot;
+##   .. ..$ :List of 16
+##   .. .. ..$ id           : chr &quot;327&quot;
+##   .. .. ..$ focus_url    : chr &quot;http://www.ipeen.com.tw/focus/1164&quot;
+##   .. .. ..$ url          : chr &quot;http://www.ipeen.com.tw/shop/617022&quot;
+##   .. .. ..$ shopname     : chr &quot;阿聰師的糕餅主意(台中秋紅谷館)&quot;
+##   .. .. ..$ address      : chr &quot;台中市西屯區臺灣大道三段630號&quot;
+##   .. .. ..$ avg_cost     : chr &quot;214&quot;
+##   .. .. ..$ tel          : chr &quot;04-2451-0199&quot;
+##   .. .. ..$ image        : chr &quot;http://iphoto.ipeen.com.tw/photo/ipeen/200x200/vip/2/2/0/store_617022/sp617022_20141024100139472.jpg&quot;
+##   .. .. ..$ score        : chr &quot;5&quot;
+##   .. .. ..$ views        : chr &quot;19387607&quot;
+##   .. .. ..$ collection   : chr &quot;183&quot;
+##   .. .. ..$ business_hour: chr &quot;週一\t09:00~22:00\t\r\n週二\t09:00~22:00\t\r\n週三\t09:00~22:00\t\r\n週四\t09:00~22:00\t\r\n週五\t09:00~22:00\t\r\n週六\t09:00~&quot;| __truncated__
+##   .. .. ..$ review       : chr &quot;145&quot;
+##   .. .. ..$ city         : chr &quot;台中市&quot;
+##   .. .. ..$ type         : chr &quot;烘焙、甜點、零食&quot;
+##   .. .. ..$ crawltime    : chr &quot;2015-07-20 11:47:04&quot;
+##   .. ..$ :List of 16
+##   .. .. ..$ id           : chr &quot;3147&quot;
+##   .. .. ..$ focus_url    : chr &quot;http://www.ipeen.com.tw/focus/832&quot;
+##   .. .. ..$ url          : chr &quot;http://www.ipeen.com.tw/shop/37453&quot;
+##   .. .. ..$ shopname     : chr &quot;先麥芋頭酥(台中中港店)&quot;
+##   .. .. ..$ address      : chr &quot;台中市西屯區臺灣大道三段570號&quot;
+##   .. .. ..$ avg_cost     : chr &quot;224&quot;
+##   .. .. ..$ tel          : chr &quot;04-2708-2268&quot;
+##   .. .. ..$ image        : chr &quot;http://iphoto.ipeen.com.tw/photo/ipeen/200x200/vip/3/5/4/store_37453/sp37453_20120204133855607.jpg&quot;
+##   .. .. ..$ score        : chr &quot;5&quot;
+##   .. .. ..$ views        : chr &quot;5168402&quot;
+##   .. .. ..$ collection   : chr &quot;157&quot;
+##   .. .. ..$ business_hour: chr &quot;週一\t08:30~22:00\t\r\n週二\t08:30~22:00\t\r\n週三\t08:30~22:00\t\r\n週四\t08:30~22:00\t\r\n週五\t08:30~22:00\t\r\n週六\t08:30~&quot;| __truncated__
+##   .. .. ..$ review       : chr &quot;137&quot;
+##   .. .. ..$ city         : chr &quot;台中市&quot;
+##   .. .. ..$ type         : chr &quot;烘焙、甜點、零食&quot;
+##   .. .. ..$ crawltime    : chr &quot;2015-07-20 12:18:30&quot;
+##   .. ..$ :List of 16
+##   .. .. ..$ id           : chr &quot;1594&quot;
+##   .. .. ..$ focus_url    : chr &quot;http://www.ipeen.com.tw/focus/1028&quot;
+##   .. .. ..$ url          : chr &quot;http://www.ipeen.com.tw/shop/57122&quot;
+##   .. .. ..$ shopname     : chr &quot;羅東林業文化園區&quot;
+##   .. .. ..$ address      : chr &quot;宜蘭縣羅東鎮中正北路118號&quot;
+##   .. .. ..$ avg_cost     : chr &quot;0&quot;
+##   .. .. ..$ tel          : chr &quot;03-954-5114&quot;
+##   .. .. ..$ image        : chr &quot;http://iphoto.ipeen.com.tw/photo/ipeen/200x200/def/0/4/5/787540/787540_20150103234752_1527.jpg&quot;
+##   .. .. ..$ score        : chr &quot;5&quot;
+##   .. .. ..$ views        : chr &quot;229825&quot;
+##   .. .. ..$ collection   : chr &quot;306&quot;
+##   .. .. ..$ business_hour: chr &quot;&quot;
+##   .. .. ..$ review       : chr &quot;131&quot;
+##   .. .. ..$ city         : chr &quot;宜蘭縣&quot;
+##   .. .. ..$ type         : chr &quot;休閒/遊憩景點&quot;
+##   .. .. ..$ crawltime    : chr &quot;2015-07-20 12:04:00&quot;</pre>
+
+</article></slide><slide class=''><hgroup><h2>POST 的請求參數以 list 放在 body 中</h2></hgroup><article  id="post--list--body-">
+
+<p>透過經緯度座標、半徑搜尋一週內Facebook上的熱門打卡點</p>
+
+<pre class = 'prettyprint lang-r'>res = httr::POST(
+  url = &quot;http://api.ser.ideas.iii.org.tw:80/api/fb_checkin_search&quot;,
+  body = list(
+    coordinates=&quot;25.041399,121.554233&quot;,
+    radius=&quot;0.1&quot;,
+    token = &quot;api_doc_token&quot;), 
+  encode = &quot;form&quot;)
+
+res %&gt;% content %&gt;% str</pre>
+
+<pre >## List of 3
+##  $ message: chr &quot;success&quot;
+##  $ total  : int 3
+##  $ result :List of 3
+##   ..$ :List of 8
+##   .. ..$ id              : chr &quot;329877747068359&quot;
+##   .. ..$ name            : chr &quot;Ice Monster&quot;
+##   .. ..$ category        : chr &quot;Food/beverages&quot;
+##   .. ..$ latitude        : chr &quot;25.0413066737470000000000000&quot;
+##   .. ..$ longitude       : chr &quot;121.5551380471800000000000000&quot;
+##   .. ..$ checkins        : chr &quot;120566&quot;
+##   .. ..$ checkins_upcount: chr &quot;184&quot;
+##   .. ..$ startdate       : chr &quot;2015-12-05 00:00:00&quot;
+##   ..$ :List of 8
+##   .. ..$ id              : chr &quot;113328975408596&quot;
+##   .. ..$ name            : chr &quot;Dazzling Cafe蜜糖吐司&quot;
+##   .. ..$ category        : chr &quot;Local business&quot;
+##   .. ..$ latitude        : chr &quot;25.0409762845020000000000000&quot;
+##   .. ..$ longitude       : chr &quot;121.5538671013800000000000000&quot;
+##   .. ..$ checkins        : chr &quot;63793&quot;
+##   .. ..$ checkins_upcount: chr &quot;97&quot;
+##   .. ..$ startdate       : chr &quot;2015-12-05 00:00:00&quot;
+##   ..$ :List of 8
+##   .. ..$ id              : chr &quot;1597819550500308&quot;
+##   .. ..$ name            : chr &quot;韓國第一品牌 八色烤肉&quot;
+##   .. ..$ category        : chr &quot;Restaurant/cafe&quot;
+##   .. ..$ latitude        : chr &quot;25.0421600000000000000000000&quot;
+##   .. ..$ longitude       : chr &quot;121.5533066000000000000000000&quot;
+##   .. ..$ checkins        : chr &quot;13412&quot;
+##   .. ..$ checkins_upcount: chr &quot;560&quot;
+##   .. ..$ startdate       : chr &quot;2015-12-05 00:00:00&quot;</pre>
+
+<aside class='note'><section><pre class = 'prettyprint lang-r'>res %&gt;% content %&gt;% .$result %&gt;% lapply(unlist) %&gt;% do.call(rbind, .) -&gt; x
+x</pre>
+
+<pre >##      id                 name                    category         
+## [1,] &quot;329877747068359&quot;  &quot;Ice Monster&quot;           &quot;Food/beverages&quot; 
+## [2,] &quot;113328975408596&quot;  &quot;Dazzling Cafe蜜糖吐司&quot; &quot;Local business&quot; 
+## [3,] &quot;1597819550500308&quot; &quot;韓國第一品牌 八色烤肉&quot; &quot;Restaurant/cafe&quot;
+##      latitude                       longitude                      
+## [1,] &quot;25.0413066737470000000000000&quot; &quot;121.5551380471800000000000000&quot;
+## [2,] &quot;25.0409762845020000000000000&quot; &quot;121.5538671013800000000000000&quot;
+## [3,] &quot;25.0421600000000000000000000&quot; &quot;121.5533066000000000000000000&quot;
+##      checkins checkins_upcount startdate            
+## [1,] &quot;120566&quot; &quot;184&quot;            &quot;2015-12-05 00:00:00&quot;
+## [2,] &quot;63793&quot;  &quot;97&quot;             &quot;2015-12-05 00:00:00&quot;
+## [3,] &quot;13412&quot;  &quot;560&quot;            &quot;2015-12-05 00:00:00&quot;</pre></section></aside>
+
+</article></slide><slide class='segue dark nobackground'><hgroup class = 'auto-fadein'><h2>Session / cookies</h2></hgroup><article  id="session-cookies-1">
+
+<p><img src="img/cookies.jpg" style="float:right;height:300px"></p>
+
+</article></slide><slide class=''><hgroup><h2>爬蟲送出對的動詞與 URI 不一定拿得到想要的資源</h2></hgroup><article  id="-uri-">
+
+<ul>
+<li>HTTP 請求的細節會影響伺服器是否想給你資料</li>
+<li>伺服器的程式可能根據請求細節下判斷，是否回傳資料</li>
+<li>例如：Cookie是否狀態正確？</li>
+</ul>
+
+<aside class='note'><section><ul>
+<li>還有那些沒 cover 到的：User-agent。</li>
+</ul></section></aside>
+
+</article></slide><slide class=''><hgroup><h2>Cookies 記錄客戶端狀態 </br> Session 是使用者與網站互動歷程</h2></hgroup><article  id="cookies--session-">
+
+<ul>
+<li>Cookies：瀏覽器的變數，用來簡單記錄使用者的狀態。</li>
+<li><p>Session：原意是指使用者進入網站到離開網站的這段互動的時間。一般來說客戶端或伺服端一方要記錄互動的狀態。Cookie是常見客戶端用來記錄使用者互動的方式。</p></li>
+<li><p>rvest::html_session</p></li>
+</ul>
+
+<aside class='note'><section><ul>
+<li>HTTP無狀態，影響互動實作</li>
+<li>購物頁面範例：結帳時怎麼知道買了什麼東西？ 那用GET參數記錄狀態？</li>
+<li>下次自動登入</li>
+<li>Cookie會過期</li>
+</ul></section></aside>
+
+</article></slide><slide class=''><hgroup><h2>Ptt 八卦版18禁詢問頁面 讓爬蟲程式無法進到文章列表</h2></hgroup><article  id="ptt-18-">
+
+<pre class = 'prettyprint lang-r'>library(rvest)
+read_html(&quot;https://www.ptt.cc/bbs/Gossiping/index.html&quot;) %&gt;% html_text(trim = T)</pre>
+
+<pre >## [1] &quot;批踢踢實業坊\n\n\n\n\n\n\n\n\n\n\n\n\t\t\n\n\n\n  var _gaq = _gaq || [];\n  _gaq.push([&#39;_setAccount&#39;, &#39;UA-32365737-1&#39;]);\n  _gaq.push([&#39;_setDomainName&#39;, &#39;ptt.cc&#39;]);\n  _gaq.push([&#39;_trackPageview&#39;]);\n\n  (function() {\n    var ga = document.createElement(&#39;script&#39;); ga.type = &#39;text/javascript&#39;; ga.async = true;\n    ga.src = (&#39;https:&#39; == document.location.protocol ? &#39;https://ssl&#39; : &#39;http://www&#39;) + &#39;.google-analytics.com/ga.js&#39;;\n    var s = document.getElementsByTagName(&#39;script&#39;)[0]; s.parentNode.insertBefore(ga, s);\n  })();\n\n\n\n\n\t\n    \n\t\t\n\n    \n    \n        本網站已依網站內容分級規定處理\n\n        警告︰您即將進入之看板內容需滿十八歲方可瀏覽。\n\n        根據「電腦網路內容分級處理辦法」第六條第三款規定，本網站已於各限制級網頁依照台灣網站分級推廣基金會之規定標示。\n        若您尚未年滿十八歲，請點選離開。若您已滿十八歲，亦不可將本區之內容派發、傳閱、出售、出租、交給或借予年齡未滿18歲的人士瀏覽，或將本網站內容向該人士出示、播放或放映。\n    \n\n\n\n    \n        \n        我同意，我已年滿十八歲進入\n        未滿十八歲或不同意本條款離開&quot;</pre>
+
+</article></slide><slide class=''><hgroup><h2>必須持有over18的cookie 伺服器才不會重導向</h2></hgroup><article  id="over18cookie-">
+
+<p><img src="img/before_over18.png" style="width:100%"></p>
+
+</article></slide><slide class=''><hgroup><h2>必須持有over18的cookie 伺服器才不會重導向</h2></hgroup><article  id="over18cookie--1">
+
+<p><img src="img/after_over18.png" style="width:100%"></p>
+
+</article></slide><slide class=''><hgroup><h2>使用rvest的session物件記錄cookie</h2></hgroup><article  id="rvestsessioncookie">
+
+<pre class = 'prettyprint lang-r'>session = rvest::html_session(url = &quot;https://www.ptt.cc/bbs/Gossiping/index.html&quot;)
+
+form = session %&gt;%
+  html_node(&quot;form&quot;) %&gt;%
+  html_form()
+
+session_redirected = rvest::submit_form(session = session, form = form )</pre>
+
+<pre >## Submitting with &#39;yes&#39;</pre>
+
+</article></slide><slide class=''><hgroup><h2>在重導向的Session物件中取得資料</h2></hgroup><article  id="session">
+
+<pre class = 'prettyprint lang-r'>session_redirected %&gt;%
+  html_node(&quot;body&quot;) %&gt;%
+  html_nodes(&quot;.title&quot;) %&gt;%
+  html_text(trim=T)</pre>
+
+<pre >##  [1] &quot;Re: [問卦] 大家對金城武的評價?&quot;                 
+##  [2] &quot;[問卦] 肥宅如何搭訕小7女店員？&quot;                 
+##  [3] &quot;Re: [ＦＢ] 柯文哲：反省&quot;                        
+##  [4] &quot;Re: [新聞] 23歲男找不到工作 幫妹慶生後燒炭亡&quot;   
+##  [5] &quot;[爆卦] 黃安:大家一起來支持一下郭冠英先生！&quot;     
+##  [6] &quot;Re: [問卦] 台灣女權真的高嗎？&quot;                  
+##  [7] &quot;Re: [新聞] 不穿西裝接見外賓　柯：向西方文明優越&quot;
+##  [8] &quot;[公告] 八卦板板規(2015.12.01)&quot;                  
+##  [9] &quot;[徵求]104.12.16下午2點多國道一號南下行車紀錄&quot;   
+## [10] &quot;[徵求] 12/15台中市漢翔上墩路口行車紀錄器&quot;       
+## [11] &quot;[公告] 2015年「代表字」與「代表成語」投票決選&quot;  
+## [12] &quot;[公告] 十二月置底閒聊區&quot;</pre>
+
+</article></slide><slide class=''><hgroup><h2>Session物件幫我們保留了Cookie</h2></hgroup><article  id="sessioncookie">
+
+<pre class = 'prettyprint lang-r'>session_redirected %&gt;% cookies</pre>
+
+<table class = 'rmdtable'>
+<tr class="header">
+<th align="left">domain</th>
+<th align="left">flag</th>
+<th align="left">path</th>
+<th align="left">secure</th>
+<th align="left">expiration</th>
+<th align="left">name</th>
+<th align="left">value</th>
+</tr>
+<tr class="odd">
+<td align="left">www.ptt.cc</td>
+<td align="left">FALSE</td>
+<td align="left">/</td>
+<td align="left">FALSE</td>
+<td align="left">NA</td>
+<td align="left">over18</td>
+<td align="left">1</td>
+</tr>
+</table>
+
+</article></slide><slide class=''><hgroup><h2>References</h2></hgroup><article  id="references">
+
+<ul>
+<li><a href='https://cran.r-project.org/web/packages/httr/vignettes/quickstart.html' title=''>httr quickstart guide</a></li>
+</ul>
+
+<h3>延伸閱讀</h3>
+
+<ul>
+<li><a href='http://code.tutsplus.com/tutorials/http-the-protocol-every-web-developer-must-know-part-1--net-31177' title=''>HTTP: The Protocol Every Web Developer Must Know - Part 1</a> 淺白的 HTTP 協定介紹文章</li>
+</ul>
+
+<img src='img/url-structure.png' title=''/>
+
+<ul>
+<li><a href='http://stackoverflow.com/questions/3804209/what-are-sessions-how-do-they-work' title=''>What are sessions? How do they work?</a> 對Session有淺白的介紹</li>
+</ul></article></slide>
+
+
+  <slide class="backdrop"></slide>
+
+</slides>
+
+<script src="http_request_files/ioslides-13.5.1/js/modernizr.custom.45394.js"></script>
+<script src="http_request_files/ioslides-13.5.1/js/prettify/prettify.js"></script>
+<script src="http_request_files/ioslides-13.5.1/js/prettify/lang-r.js"></script>
+<script src="http_request_files/ioslides-13.5.1/js/prettify/lang-yaml.js"></script>
+<script src="http_request_files/ioslides-13.5.1/js/hammer.js"></script>
+<script src="http_request_files/ioslides-13.5.1/js/slide-controller.js"></script>
+<script src="http_request_files/ioslides-13.5.1/js/slide-deck.js"></script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+<!-- map slide visiblity events into shiny -->
+<script>
+  (function() {
+    if (window.jQuery) {
+       window.jQuery(document).on('slideleave', function(e) {
+         window.jQuery(e.target).trigger('hidden');
+      });
+       window.jQuery(document).on('slideenter', function(e) {
+         window.jQuery(e.target).trigger('shown');
+      });
+    }
+  })();
+</script>
+
+</body>
+</html>
