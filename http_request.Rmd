@@ -33,16 +33,15 @@ output:
 
 
 <div class="notes">
-
-- HTTP 是機器在網路上溝通的方式
-- 伺服器提供服務。例如：Google機房的伺服器提供搜尋服務。
-- 客戶端請求服務。例如：你的電腦（客戶端）透過瀏覽器或R程式向Google伺服器請求搜尋服務。
-- 常用的動詞`GET`(90%)、`POST`(9%) （其他你幾乎看不到了）
-- URI代表資源位置。
-
-> 瀏覽器使用動詞 `GET`對伺服器請求 URI `/`。伺服器回應200，並傳回html文件。
+<img src="img/order.jpg" style="width:100%">
 
 </div>
+
+
+## headers: 客戶端和伺服器的對話有更多細節
+
+<img src="img/request_headers.png" style="width:40%;display:inline;">
+<img src="img/response_headers.png" style="width:40%;display:inline;">
 
 ## API 文件註明「動詞」與「 URI 」
 
@@ -93,8 +92,17 @@ res = httr::POST(
   encode = "form")
 
 res %>% content %>% str
-
 ```
+
+<div class="notes">
+
+```{r}
+res %>% content %>% .$result %>% lapply(unlist) %>% do.call(rbind, .) -> x
+x
+```
+
+</div>
+
 
 # Session / cookies
 
